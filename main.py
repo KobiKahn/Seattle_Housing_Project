@@ -57,6 +57,13 @@ def multi_linear_regression(x1, x2, y):
         ans_list.append(sum( (y[i] - (x1_coeff*x1[i] + x2_coeff*x2[i] + con_coeff))**2))
     return(ans_list)
 
+def scatter_quadratic(x_list, x2_coeff, x_coeff, con_coeff):
+    new_y = []
+    x_list = sorted(x_list)
+    for val in x_list:
+        new_y.append((x2_coeff * val**2) + (x_coeff * val) + con_coeff)
+    return x_list, new_y
+
 
 #CLEAN UP THE DATAFRAME
 house_df = pd.read_csv('data.csv', delim_whitespace=False)
@@ -65,22 +72,40 @@ house_df = house_df[(house_df['price']>0) & (house_df['price']<5000000)]
 
 training_set, test_set = get_random(house_df, 50)
 
+training_set['sqft_living'] = training_set['sqft_living'].astype('float64')
+training_set['sqft_lot'] = training_set['sqft_lot'].astype('float64')
 
-x, b = regression_equ(training_set['sqft_living'], training_set['sqft_lot'])
-
-y = []
+# FIND SLOPES
+x1, b1 = regression_equ(training_set['sqft_living'], training_set['price'])
+x2, b2 = regression_equ(training_set['sqft_lot'], training_set['price'])
+y1 = []
+y2 = []
 for item in training_set['sqft_living']:
-    y.append(item * int(x) + int(b))
+    y1.append(item * int(x1) + int(b1))
+for item in training_set['sqft_lot']:
+    y2.append(item * int(x2) + int(b2))
 
-# print(len(y), len(training_set['sqft_living']))
+# MULTI LINEAR REGRESSION
+liv_x2_coeff, liv_x_coeff, liv_con_coeff = regression_equ(training_set['sqft_living'], training_set['price'], False)
+lot_x2_coeff, lot_x_coeff, lot_con_coeff = regression_equ(training_set['sqft_lot'], training_set['price'], False)
 
-fig, ax = plt.subplots(nrows=1, ncols=3)
+new_liv_x, liv_y = scatter_quadratic(training_set['sqft_living'], liv_x2_coeff, liv_x_coeff, liv_con_coeff)
+new_lot_x, lot_y = scatter_quadratic(training_set['sqft_lot'], lot_x2_coeff, lot_x_coeff, lot_con_coeff)
+
+# GRAPH THE STUFF
+fig, ax = plt.subplots(nrows=1, ncols=4)
 training_set.plot.scatter('sqft_living', 'price', ax=ax[0])
-training_set.plot('sqft_living', y, ax=ax[0])
+ax[0].plot(training_set['sqft_living'], y1)
 training_set.plot.scatter('sqft_lot', 'price', ax=ax[1])
+ax[1].plot(training_set['sqft_lot'], y2)
 
+training_set.plot.scatter('sqft_living', 'price', ax=ax[2])
+
+ax[2].plot(new_liv_x, liv_y)
+
+training_set.plot.scatter('sqft_lot', 'price', ax=ax[3])
+ax[3].plot(new_lot_x, lot_y)
 
 plt.show()
-print(x, b)
 
 
