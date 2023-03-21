@@ -74,6 +74,29 @@ training_set, test_set = get_random(house_df, 50)
 
 training_set['sqft_living'] = training_set['sqft_living'].astype('float64')
 training_set['sqft_lot'] = training_set['sqft_lot'].astype('float64')
+# print(house_df)
+# print(house_df.iloc1[2])
+#ZIP CODE STUFF
+zip_df = None
+zip_dict = {}
+for zip in house_df['statezip']:
+    zip = zip.split()[-1]
+    if zip in zip_dict.keys():
+        zip_dict[zip] += 1
+    else:
+        zip_dict[zip] = 0
+for key, val in zip_dict.items():
+    if val > 95:
+        i = 0
+        for zip in house_df['statezip']:
+            if str(val) in zip:
+                zip_df = pd.concat([house_df, house_df.iloc[i]])
+                zip_df = zip_df.reset_index()
+            i += 1
+
+print(zip_df)
+
+
 
 # FIND SLOPES
 x1, b1 = regression_equ(training_set['sqft_living'], training_set['price'])
@@ -98,14 +121,11 @@ training_set.plot.scatter('sqft_living', 'price', ax=ax[0])
 ax[0].plot(training_set['sqft_living'], y1)
 training_set.plot.scatter('sqft_lot', 'price', ax=ax[1])
 ax[1].plot(training_set['sqft_lot'], y2)
-
 training_set.plot.scatter('sqft_living', 'price', ax=ax[2])
-
 ax[2].plot(new_liv_x, liv_y)
-
 training_set.plot.scatter('sqft_lot', 'price', ax=ax[3])
 ax[3].plot(new_lot_x, lot_y)
+# plt.show()
 
-plt.show()
 
 
