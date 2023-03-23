@@ -64,6 +64,37 @@ def scatter_quadratic(x_list, x2_coeff, x_coeff, con_coeff):
         new_y.append((x2_coeff * val**2) + (x_coeff * val) + con_coeff)
     return x_list, new_y
 
+def mean(data):
+    total = sum(data)
+    m = total / len(data)
+    return m
+def median(data):
+    data.sort()
+    if len(data) % 2 == 0:
+        m = (data[len(data) // 2] + data[len(data) // 2 - 1]) / 2
+    else:
+        m = data[len(data) // 2]
+    return m
+def variance(data):
+    new_list = [(val - mean(data)) ** 2 for val in data]
+    v = mean(new_list)
+    return v
+def stand_dev(data):
+    v = variance(data)
+    s = math.sqrt(v)
+    return s
+# year_built
+def mini_df(df, zip_list, col_names):
+    big_dict = {}
+    for zip in zip_list:
+        stats_dict = {}
+        print(df.index[zip])
+
+
+
+
+
+
 
 #CLEAN UP THE DATAFRAME
 house_df = pd.read_csv('data.csv', delim_whitespace=False)
@@ -77,25 +108,31 @@ training_set['sqft_lot'] = training_set['sqft_lot'].astype('float64')
 # print(house_df)
 # print(house_df.iloc1[2])
 #ZIP CODE STUFF
-zip_df = None
+zip_df = house_df
 zip_dict = {}
+zip_list = []
+large_zip = []
 for zip in house_df['statezip']:
     zip = zip.split()[-1]
+    zip_list.append(zip)
     if zip in zip_dict.keys():
         zip_dict[zip] += 1
     else:
         zip_dict[zip] = 0
+house_df = house_df.set_axis(zip_list)
+
 for key, val in zip_dict.items():
     if val > 95:
-        i = 0
-        for zip in house_df['statezip']:
-            if str(val) in zip:
-                zip_df = pd.concat([house_df, house_df.iloc[i]])
-                zip_df = zip_df.reset_index()
-            i += 1
+        large_zip.append(key)
+bad_index = []
+for index in house_df.index:
+    if index not in large_zip:
+        bad_index.append(index)
 
-print(zip_df)
+zip_df = house_df.drop(bad_index, inplace=False)
 
+
+mini_df(zip_df, large_zip, ['price', 'bathrooms', 'bedrooms', 'sqft_living', 'sqft_lot', 'yr_built'])
 
 
 # FIND SLOPES
