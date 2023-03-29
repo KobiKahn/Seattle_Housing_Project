@@ -96,7 +96,9 @@ def user_input():
     # floor_entry = input('ENTER NUMBER OF FLOORS HERE: ')
     # sqft_entry = input('ENTER SQARE FOOT LIVING SPACE HERE: ')
     # print('THANK YOU! HERE ARE YOUR FIVE BEST OPTIONS...')
-    user_list = ['WA 98133', 342000, 3, 2.5, 3, 6200]
+    user_list = {'statezip': 'WA 98133', 'price': 342000, 'bedrooms': 3, 'bathrooms': 2.5, 'floors': 3, 'sqft_living': 6200}
+    user_list = pd.DataFrame(user_list, [len(house_df) + 1])
+    print(user_list)
     # user_list = [zip_entry, price_entry, bed_entry, bath_entry, floor_entry, sqft_entry]
     return(user_list)
 
@@ -110,7 +112,8 @@ def user_input():
 #CLEAN UP THE DATAFRAME
 house_df = pd.read_csv('data.csv', delim_whitespace=False)
 house_df['price'] = house_df['price'].round()
-house_df = house_df[(house_df['price']>0) & (house_df['price']<5000000)]
+# house_df = house_df[(house_df['price']>0) & (house_df['price']<5000000)]
+
 
 # MAIN APP PROJECT
 
@@ -122,34 +125,44 @@ house_df = house_df[(house_df['price']>0) & (house_df['price']<5000000)]
 # house_df['floors'] = (house_df.floors - house_df.floors.mean())/house_df.floors.std()
 # house_df['sqft_living'] = (house_df.sqft_living - house_df.sqft_living.mean())/house_df.sqft_living.std()
 
+user_list = user_input()
+pd.concat([house_df, user_list])
+print(house_df)
 price_list = house_df['price']
 bed_list = house_df['bedrooms']
 bath_list = house_df['bathrooms']
 floor_list = house_df['floors']
 sqft_list = house_df['sqft_living']
+# print(price_list)
 
+# COMBINE THE DFs WITH USER LISTS
+# pd.concat([price_list, user_list[1]])
+# pd.concat([bed_list, user_list[2]])
+# pd.concat([bath_list, user_list[3]])
+# pd.concat([floor_list, user_list[4]])
+# pd.concat([sqft_list, user_list[5]])
+# price_list.loc[len(price_list.index)] = user_list[1]
+# bed_list.loc[len(bed_list.index)] = user_list[2]
+# bath_list.loc[len(bath_list.index)] = user_list[3]
+# floor_list.loc[len(floor_list.index)] = user_list[4]
+# sqft_list.loc[len(sqft_list.index)] = user_list[5]
 
-user_list = user_input()
+# print(price_list)
+# CALCULATE NORMALIZED DATA
+# price_list = (price_list - price_list.mean())/price_list.std()
+# bed_list = (bed_list - bed_list.mean())/bed_list.std()
+# bath_list = (bath_list - bath_list.mean())/bath_list.std()
+# floor_list = (floor_list - floor_list.mean())/floor_list.std()
+# sqft_list = (sqft_list - sqft_list.mean())/sqft_list.std()
 
-price_list.append(user_list[1])
-bed_list.append(user_list[2])
-bath_list.append(user_list[3])
-floor_list.append(user_list[4])
-sqft_list.append(user_list[5])
-
-price_list = (price_list - price_list.mean())/price_list.std()
-bed_list = (bed_list - bed_list.mean())/bed_list.std()
-bath_list = (bath_list - bath_list.mean())/bath_list.std()
-floor_list = (floor_list - floor_list.mean())/floor_list.std()
-sqft_list = (sqft_list - sqft_list.mean())/sqft_list.std()
-
-user_list = [user_list[0]]
-user_list.append(price_list[-1])
-user_list.append(bed_list[-1])
-user_list.append(bath_list[-1])
-user_list.append(floor_list[-1])
-user_list.append(sqft_list[-1])
-print(user_list)
+# REMAKE USER LIST WITH NOMALIZED DATA
+# user_list = [user_list[0]]
+# user_list.append(price_list[-1])
+# user_list.append(bed_list[-1])
+# user_list.append(bath_list[-1])
+# user_list.append(floor_list[-1])
+# user_list.append(sqft_list[-1])
+# print(user_list)
 
 
 
