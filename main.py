@@ -110,6 +110,8 @@ def user_input():
 #CLEAN UP THE DATAFRAME
 house_df = pd.read_csv('data.csv', delim_whitespace=False)
 house_df['price'] = house_df['price'].round()
+
+original_house_df = house_df
 # house_df = house_df[(house_df['price']>0) & (house_df['price']<5000000)]
 
 # MAIN APP PROJECT
@@ -139,10 +141,20 @@ print(user_row)
 x1, x2, x3, x4, x5 = list(user_row['price'])[0], list(user_row['bedrooms'])[0], list(user_row['bathrooms'])[0], list(user_row['floors'])[0], list(user_row['sqft_living'])[0]
 print(x1, x2, x3 ,x4 ,x5)
 
+dist_dict = {}
+close_list = []
+for index, row in house_df.iterrows():
+    dist_dict[index] = ( (x1 - row['price'])**2 + (x2 - row['bedrooms'])**2 + (x3*row['bathrooms'])**2 + (x4*row['floors'])**2 + (x5 * row['sqft_living'])**2 )
 
+dist_dict = sorted(dist_dict.items(), key=lambda x:x[1])
+close_list = dist_dict[:5]
 
+# PRINT FINAL RESULT
+for i, num in close_list:
+    # print(house_df.loc[i])
+    print(original_house_df.loc[i])
 
-
+print(close_list)
 
 
 
